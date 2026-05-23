@@ -1,0 +1,38 @@
+=== INITIALIZATION ===
+
+=== EVENT 1: Node A receives local request to add $50 ===
+[Lamport] Node A local update: Balance=$150, LC=1
+[Vector] Node A local update: Balance=$150, VC=[1, 0, 0]
+
+=== EVENT 2: Node B receives Node A's message, then adds 10% interest ===
+[Lamport] Node B received UPDATE from A: Balance=$150, LC=1. New LC=2
+[Lamport] Node B applied updates. Current Balance=$150
+[Vector] Node B received UPDATE from A: Balance=$150, VC=[1, 0, 0]
+[Vector] Node B evaluated causality: HAPPENED_AFTER
+[Vector] Node B applied update. New Balance=$150, VC=[1, 1, 0]
+[Lamport] Node B local update: Balance=$165, LC=3
+[Vector] Node B local update: Balance=$165, VC=[1, 2, 0]
+
+=== EVENT 3: Node C partitioned, receives local withdraw $20, then partition heals ===
+[Lamport] Node C local update: Balance=$80, LC=1
+[Vector] Node C local update: Balance=$80, VC=[0, 0, 1]
+
+=== EVENT 4: Node A receives Node C's message ===
+[Lamport] Node A received UPDATE from C: Balance=$80, LC=1. New LC=2
+[Lamport] Node A applied updates. Current Balance=$80
+[Vector] Node A received UPDATE from C: Balance=$80, VC=[0, 0, 1]
+[Vector] Node A evaluated causality: CONCURRENT
+[Vector] WARNING: Replication Conflict detected at Node A!
+         Cannot apply UPDATE(Balance=$80) safely. Halting overwrite.
+
+=== EVENT 5: Node A receives Node B's message ===
+[Lamport] Node A received UPDATE from B: Balance=$165, LC=3. New LC=4
+[Lamport] Node A applied updates. Current Balance=$165
+[Vector] Node A received UPDATE from B: Balance=$165, VC=[1, 2, 0]
+[Vector] Node A evaluated causality: CONCURRENT
+[Vector] WARNING: Replication Conflict detected at Node A!
+         Cannot apply UPDATE(Balance=$165) safely. Halting overwrite.
+
+=== FINAL STATE OF NODE A ===
+Lamport Clock Final Balance at Node A: $165
+Vector Clock Final Balance at Node A: $150
